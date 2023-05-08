@@ -87,4 +87,13 @@ const schema = new db.Schema({
 	}
 })
 
+schema.virtual('likes', {
+	ref: 'Like',
+	localField: '_id',
+	foreignField: '_user'
+})
+
+schema.set('toObject', { virtuals: true })
+schema.set('toJSON', { virtuals: true })
+
 export default db.model('User', schema)

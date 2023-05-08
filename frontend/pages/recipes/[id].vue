@@ -61,6 +61,14 @@
 						{{ likeCount }}
 					</button>
 				</div>
+				<div>
+					Лайкнули:
+					<p v-for="(item, index) in postLikes" :key="index">
+						<NuxtLink :to="`/profile/${item._user._id}`" class="text-sky-700">{{
+							item._user.login
+						}}</NuxtLink>
+					</p>
+				</div>
 			</div>
 			<div class="text-center text-6xl" v-else>
 				<h2>Рецепт не существует!</h2>
@@ -126,9 +134,10 @@ const toggleLike = async () => {
 };
 
 const checkLike = () => {
+	console.log(postLikes);
 	userLikeId.value = null;
 	postLikes.forEach(el => {
-		if (el._user == authStore.user.id) {
+		if (el._user._id == authStore.user.id) {
 			userLikeId.value = el._id;
 		}
 	});

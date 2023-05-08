@@ -3,8 +3,15 @@ import Like from '../models/likeModel.js'
 
 export const showRecipes = async (req, res) => {
 	await Recipe.find({})
-		// .populate('author', 'login')
+		.populate({ path: 'author', select: 'login' })
 		.populate('likeCount')
+		.populate({
+			path: 'likes',
+			populate: {
+				path: '_user',
+				select: 'login'
+			}
+		})
 		.exec()
 		.then(result => {
 			res.json(result)
@@ -65,7 +72,14 @@ export const showRecipeById = async (req, res) => {
 	const id = req.params.id
 	await Recipe.findById(id)
 		.populate({ path: 'author', select: 'login' })
-		.populate('likes likeCount')
+		.populate('likeCount')
+		.populate({
+			path: 'likes',
+			populate: {
+				path: '_user',
+				select: 'login'
+			}
+		})
 		.exec()
 		.then(result => {
 			res.json(result)
