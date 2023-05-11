@@ -1,13 +1,14 @@
 <template>
 	<div class="container mx-auto flex min-h-full items-center justify-center">
 		<div class="w-full border py-6 px-4">
-			<h2 class="mb-6 text-center text-2xl">{{ title }}</h2>
+			<h2 class="mb-6 text-center text-2xl font-bold">{{ title }}</h2>
 			<div v-if="isRecipeExists">
 				<div class="mb-4 flex gap-4">
-					<div class="basis-1/2">
+					<div class="basis-1/4">
 						<img
 							:src="`${API_URL}/recipes_images/${previewImg}`"
 							alt="Фото к рецепту"
+							class="h-auto w-full rounded"
 						/>
 					</div>
 					<div>
@@ -25,10 +26,6 @@
 							Количество порций:
 							{{ author.login }}
 						</p>
-						<p>
-							Рейтинг:
-							{{ author.login }}
-						</p>
 						<p>{{ desc }}</p>
 					</div>
 				</div>
@@ -40,9 +37,12 @@
 						</li>
 					</ul>
 				</div>
+				<div class="mb-4">
+					<h3 class="text-xl font-bold">Рецепт</h3>
+					<p v-html="content" class=""></p>
+				</div>
 
-				<p v-html="content" class="mb-3 border p-2"></p>
-				<div class="flex gap-2">
+				<div class="mb-4 flex gap-2">
 					<button>В избранное</button>
 
 					<button
@@ -61,13 +61,39 @@
 						{{ likeCount }}
 					</button>
 				</div>
-				<div>
-					Лайкнули:
+				<div class="mb-4 hidden">
+					Понравилось:
 					<p v-for="(item, index) in postLikes" :key="index">
 						<NuxtLink :to="`/profile/${item._user._id}`" class="text-sky-700">{{
 							item._user.login
 						}}</NuxtLink>
 					</p>
+				</div>
+				<div class="mb-6 flex items-center gap-4">
+					<div class="flex-0 h-16 basis-16 rounded-full">
+						<img
+							:src="`${API_URL}/avatars/${authStore.user.avatar}`"
+							class="h-full min-w-full rounded-full object-cover"
+						/>
+					</div>
+					<textarea
+						class="w-full flex-1 resize-none border px-2 py-1 outline-none"
+						placeholder="Написать комментарий"
+						cols="30"
+						rows="2"
+						v-model="commentText"
+					></textarea>
+					<button class="btn" @click="createComment">Отправить</button>
+				</div>
+				<div>
+					<comment
+						v-for="item in postComments"
+						:key="item._id"
+						:id="item._id"
+						:user="item._user"
+						:content="item.content"
+						@update="getRecipe"
+					/>
 				</div>
 			</div>
 			<div class="text-center text-6xl" v-else>
@@ -82,6 +108,7 @@ import * as recipes from '@/services/recipes';
 import API_URL from '@/config/config';
 import { useAuthStore } from '@/store';
 import { Icon } from '@iconify/vue';
+import Comment from '@/components/Comment.vue';
 
 const route = useRoute();
 
@@ -96,6 +123,8 @@ const likeCount = ref(0);
 let postLikes = reactive([]);
 const userLikeId = ref(null);
 let ingredients = reactive([]);
+const commentText = ref('');
+let postComments = reactive('');
 
 const isRecipeExists = ref(false);
 
@@ -112,6 +141,7 @@ const getRecipe = async () => {
 			likeCount.value = response.data.likeCount;
 			isRecipeExists.value = true;
 			postLikes = response.data.likes;
+			postComments = response.data.comments;
 		})
 		.catch(error => {
 			console.log(error);
@@ -133,8 +163,21 @@ const toggleLike = async () => {
 	checkLike();
 };
 
+const reset = () => {
+	commentText.value = '';
+};
+
+const createComment = async () => {
+	await recipes.createComment({
+		postId: route.params.id,
+		userId: authStore.user.id,
+		content: commentText.value
+	});
+	reset();
+	getRecipe();
+};
+
 const checkLike = () => {
-	console.log(postLikes);
 	userLikeId.value = null;
 	postLikes.forEach(el => {
 		if (el._user._id == authStore.user.id) {

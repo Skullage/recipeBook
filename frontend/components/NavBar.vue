@@ -26,9 +26,9 @@
 				</nav>
 				<div class="flex items-center gap-4">
 					<button
-						class="border px-6 py-2"
-						@click="showModal()"
 						v-if="!authStore.isLogged"
+						@click="showModal()"
+						class="btn !px-6"
 					>
 						Войти
 					</button>

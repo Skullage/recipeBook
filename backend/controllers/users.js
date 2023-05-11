@@ -21,6 +21,8 @@ export const showUserById = async (req, res) => {
 	const id = req.params.id
 
 	await User.findById(id)
+		.populate({ path: 'likes', populate: { path: '_recipe', select: 'title' } })
+		.populate('postsCount')
 		.exec()
 		.then(result => {
 			res.json(result)

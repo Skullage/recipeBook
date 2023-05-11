@@ -30,13 +30,11 @@ const schema = new db.Schema({
 	},
 	previewImg: {
 		type: String,
-		trim: true,
 		default: 'placeholder.png'
 	},
 	author: {
 		type: db.Schema.Types.ObjectId,
-		ref: 'User',
-		required: true
+		ref: 'User'
 	},
 	ingredients: {
 		type: String,
@@ -52,22 +50,30 @@ const schema = new db.Schema({
 			return JSON.stringify(data)
 		}
 	},
-	// comments: [{ type: db.Schema.Types.ObjectId, ref: 'Comment' }],
-	// likes: { type: db.Schema.Types.ObjectId, ref: 'Like' },
 	private: {
 		type: Boolean,
 		default: false
 	},
 	created_at: {
 		type: Date,
-		default: Date.now(),
-		trim: true
+		default: Date.now()
 	},
 	updated_at: {
-		type: Date,
-		default: Date.now(),
-		trim: true
+		type: Date
 	}
+})
+
+schema.virtual('commentsCount', {
+	ref: 'Comment',
+	localField: '_id',
+	foreignField: '_recipe',
+	count: true
+})
+
+schema.virtual('comments', {
+	ref: 'Comment',
+	localField: '_id',
+	foreignField: '_recipe'
 })
 
 schema.virtual('likeCount', {
@@ -81,6 +87,10 @@ schema.virtual('likes', {
 	ref: 'Like',
 	localField: '_id',
 	foreignField: '_recipe'
+})
+
+schema.post('save', function (next) {
+	this.updated_at = Date.now()
 })
 
 schema.set('toObject', { virtuals: true })

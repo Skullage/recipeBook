@@ -7,8 +7,8 @@ const schema = new db.Schema({
 		required: true,
 		maxlength: 16,
 		minlength: 4,
-		trim: true,
-		unique: true
+		unique: true,
+		trim: true
 	},
 	password: {
 		type: String,
@@ -22,7 +22,8 @@ const schema = new db.Schema({
 		required: true,
 		maxlength: 255,
 		trim: true,
-		unique: true
+		unique: true,
+		lowercase: true
 	},
 	role: {
 		type: String,
@@ -30,60 +31,46 @@ const schema = new db.Schema({
 		trim: true,
 		default: 'Пользователь'
 	},
-	postsCount: {
-		type: Number,
-		trim: true,
-		default: 0
-	},
 	registration_IP: {
 		type: String,
 		maxlength: 15,
-		minlength: 7,
-		trim: true
+		minlength: 7
 	},
 	last_IP: {
 		type: String,
 		maxlength: 15,
-		minlength: 7,
-		trim: true
+		minlength: 7
 	},
 	rating: {
 		type: Number,
-		trim: true,
 		default: 0
 	},
 	birthday: {
-		type: Date,
-		trim: true
+		type: Date
 	},
 	country: {
 		type: String,
 		maxlength: 20,
-		required: true,
-		trim: true
+		required: true
 	},
 	avatar: {
 		type: String,
 		maxlength: 45,
-		trim: true,
 		default: ''
 	},
 	phone: {
 		type: String,
 		minlength: 8,
 		maxlength: 13,
-		required: true,
-		trim: true
+		required: true
 	},
 	created_at: {
 		type: Date,
 		default: Date.now(),
-		trim: true
+		immutable: true
 	},
 	updated_at: {
-		type: Date,
-		default: Date.now(),
-		trim: true
+		type: Date
 	}
 })
 
@@ -91,6 +78,17 @@ schema.virtual('likes', {
 	ref: 'Like',
 	localField: '_id',
 	foreignField: '_user'
+})
+
+schema.virtual('postsCount', {
+	ref: 'Recipe',
+	localField: '_id',
+	foreignField: 'author',
+	count: true
+})
+
+schema.pre('save', function (next) {
+	this.updated_at = Date.now()
 })
 
 schema.set('toObject', { virtuals: true })

@@ -28,11 +28,7 @@
 					</div>
 					<NuxtLink href="#">Забыли пароль?</NuxtLink>
 				</div>
-				<input
-					type="submit"
-					value="Войти"
-					class="w-full cursor-pointer rounded border py-2 font-bold duration-300 hover:bg-gray-300"
-				/>
+				<button class="btn w-full">Войти</button>
 			</form>
 		</template>
 		<template v-slot:footer>

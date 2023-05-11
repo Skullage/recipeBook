@@ -35,7 +35,7 @@
 				<h3 class="mb-2 pl-4">Ингредиенты</h3>
 				<div class="mb-4">
 					<base-ingredient-field
-						class="mb-2"
+						class="mb-6"
 						v-for="(item, index) in ingredients"
 						:key="index"
 						:existingTags="getFreeIngredients(index)"
@@ -45,9 +45,7 @@
 					/>
 				</div>
 				<div class="text-center">
-					<button @click.prevent="addIngredient" class="border px-3 py-2">
-						Добавить
-					</button>
+					<button @click.prevent="addIngredient" class="btn">Добавить</button>
 				</div>
 			</div>
 			<div>
@@ -79,11 +77,7 @@
 				<label class="order-2">Скрытый рецепт?</label>
 				<input type="checkbox" v-model="hidden" />
 			</div>
-			<input
-				type="submit"
-				value="Создать"
-				class="w-full cursor-pointer rounded border py-2 font-bold duration-300 hover:bg-gray-300"
-			/>
+			<button class="btn">Создать</button>
 		</form>
 	</div>
 </template>
@@ -101,7 +95,7 @@ import BaseIngredientField from '@/components/UI/BaseIngredientField.vue';
 const title = ref('123');
 const desc = ref('123');
 const content = ref('123');
-const ingredients = reactive([{ title: '', amount: '0' }]);
+const ingredients = reactive([{ title: '', amount: 0 }]);
 const existingIngredients = ref([]);
 const tags = ref([]);
 const existingTags = ref([]);
@@ -121,10 +115,15 @@ const createRecipe = async () => {
 		ingredients: ingredients,
 		private: hidden.value
 	};
-	await recipes.createRecipe(recipe).then(response => {
-		reset();
-		alert.printAlert('Ваш рецепт успешно добавлен на сайт', 'success');
-	});
+	await recipes
+		.createRecipe(recipe)
+		.then(response => {
+			reset();
+			alert.printAlert('Ваш рецепт успешно добавлен на сайт', 'success');
+		})
+		.catch(error => {
+			console.log(error);
+		});
 };
 
 const reset = () => {

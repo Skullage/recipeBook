@@ -1,5 +1,4 @@
 import Recipe from '../models/recipeModel.js'
-import Like from '../models/likeModel.js'
 
 export const showRecipes = async (req, res) => {
 	await Recipe.find({})
@@ -15,33 +14,6 @@ export const showRecipes = async (req, res) => {
 		.exec()
 		.then(result => {
 			res.json(result)
-		})
-		.catch(error => {
-			console.log(error)
-			res.send(error)
-		})
-}
-
-export const setLike = async (req, res) => {
-	const postId = req.params.id
-	const userId = req.body.userId
-
-	let data = { _user: userId, _recipe: postId }
-	await Like.create(data)
-		.then(result => {
-			res.json(result)
-		})
-		.catch(error => {
-			console.log(error)
-			res.send(error)
-		})
-}
-
-export const deleteLike = async (req, res) => {
-	const likeId = req.params.id
-	await Like.findByIdAndRemove(likeId)
-		.then(result => {
-			res.json({ message: 'deleted' })
 		})
 		.catch(error => {
 			console.log(error)
@@ -80,6 +52,10 @@ export const showRecipeById = async (req, res) => {
 				select: 'login'
 			}
 		})
+		.populate({
+			path: 'comments',
+			populate: '_user'
+		})
 		.exec()
 		.then(result => {
 			res.json(result)
@@ -99,7 +75,7 @@ export const createRecipe = async (req, res) => {
 		})
 		.catch(error => {
 			console.log(error)
-			res.send(error)
+			throw error
 		})
 }
 

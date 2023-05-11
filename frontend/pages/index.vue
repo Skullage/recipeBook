@@ -13,6 +13,7 @@
 					:previewImg="item.previewImg"
 					:content="JSON.parse(item.content)"
 					:likeCount="item.likeCount"
+					:postDate="item.created_at"
 					class="basis-1/3"
 				/>
 			</section>

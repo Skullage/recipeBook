@@ -11,7 +11,7 @@ export const getUserCountry = async ip => {
 };
 
 export const createUser = async user => {
-	const response = await api.post(`/register`, {
+	const response = await api.post(`/user/register`, {
 		login: user.login,
 		password: user.password,
 		email: user.email,
@@ -25,20 +25,20 @@ export const createUser = async user => {
 };
 
 export const getUserByEmail = async email => {
-	const response = await api.get(`/users/email=${email}`);
+	const response = await api.get(`/user/email=${email}`);
 	return response.data;
 };
 export const getUserByLogin = async login => {
-	const response = await api.get(`/users/login=${login}`);
+	const response = await api.get(`/user/login=${login}`);
 	return response.data;
 };
 export const getUserById = async id => {
-	const response = await api.get(`/users/id=${id}`);
+	const response = await api.get(`/user/id=${id}`);
 	return response.data;
 };
 
 export const auth = async user => {
-	const response = await api.post(`/login`, {
+	const response = await api.post(`/user/login`, {
 		login: user.login,
 		password: user.password
 	});
@@ -46,7 +46,7 @@ export const auth = async user => {
 };
 
 export const uploadAvatar = async (data, token) => {
-	const response = await api.post(`/uploadAvatar`, data, {
+	const response = await api.post(`/user/uploadAvatar`, data, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		}
@@ -55,13 +55,14 @@ export const uploadAvatar = async (data, token) => {
 };
 
 export const deleteAvatar = async (id, file) => {
-	const response = await api.delete(`/avatars/${id}`, {
+	const response = await api.delete(`/user/avatar/${id}/delete`, {
 		data: { id: id, avatarName: file }
 	});
 	return response;
 };
 
 export const getProfile = async id => {
-	const response = await api.get(`/users/profile=${id}`);
+	// const response = await api.get(`/users/profile=${id}`);
+	const response = await api.get(`/user/${id}`);
 	return response;
 };

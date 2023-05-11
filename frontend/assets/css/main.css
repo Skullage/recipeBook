@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .btn {
+        @apply cursor-pointer rounded border py-2 px-3 font-bold duration-300 hover:bg-gray-300 inline-block;
+    }
+}
+
 @layer utilities {
     .scrollbar::-webkit-scrollbar {
         @apply w-3 h-1;
@@ -26,5 +32,4 @@ body {
     font-family: 'Oswald', sans-serif;
     overflow-x: hidden;
     @apply scrollbar bg-white dark:bg-dark;
-    
 }

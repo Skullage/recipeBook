@@ -10,10 +10,15 @@ import {
 	createRecipe,
 	updateRecipe,
 	deleteRecipe,
-	uploadPreview,
-	setLike,
-	deleteLike
+	uploadPreview
 } from '../controllers/recipes.js'
+
+import {
+	createComment,
+	deleteComment,
+	updateComment
+} from '../controllers/comments.js'
+import { setLike, deleteLike } from '../controllers/likes.js'
 import { showIngredients } from '../controllers/ingredients.js'
 import {
 	showUsers,
@@ -32,10 +37,13 @@ import {
 // init express router
 const router = express.Router()
 
-router.post('/register', register)
-router.post('/login', login)
-router.post('/uploadAvatar', uploadAvatar)
-router.post('/uploadPreview', uploadPreview)
+router.post('/user/register', register)
+router.post('/user/login', login)
+router.post('/user/uploadAvatar', uploadAvatar)
+router.post('/recipe/uploadPreview', uploadPreview)
+router.post('/recipe/create', createRecipe)
+router.post('/like/create', setLike)
+router.post('/comment/create', createComment)
 
 // Get All Product
 router.get('/users', showUsers)
@@ -43,26 +51,23 @@ router.get('/recipes', showRecipes)
 router.get('/ingredients', showIngredients)
 
 // Get Single Product
-router.get('/recipes/id=:id', showRecipeById)
-router.get('/users/id=:id', showUserById)
-router.get('/users/profile=:id', showProfileById)
-router.get('/users/login=:login', showUserByLogin)
-router.get('/users/email=:email', showUserByEmail)
-
-// Create New Product
-router.post('/recipes', createRecipe)
+router.get('/recipe/:id', showRecipeById)
+router.get('/user/:id', showUserById)
+router.get('/user/profile=:id', showProfileById)
+router.get('/user/login=:login', showUserByLogin)
+router.get('/user/email=:email', showUserByEmail)
 
 // Update Product
-router.put('/recipes/:id', verifyUserToken, updateRecipe)
-router.put('/users/:id', verifyUserToken, IsAdmin, updateUser)
+router.put('/recipe/:id/update', verifyUserToken, updateRecipe)
+router.put('/user/:id/update', verifyUserToken, IsAdmin, updateUser)
+router.put('/comment/:id/update', updateComment)
 
 // Delete Product
-router.delete('/recipes/:id', verifyUserToken, deleteRecipe)
-router.delete('/users/:id', verifyUserToken, IsAdmin, deleteUser)
-router.delete('/avatars/:id', deleteAvatar)
-
-router.post('/likes/:id', setLike)
-router.delete('/likes/:id', deleteLike)
+router.delete('/recipe/:id/delete', verifyUserToken, deleteRecipe)
+router.delete('/user/:id/delete', verifyUserToken, IsAdmin, deleteUser)
+router.delete('/user/avatar/:id/delete', deleteAvatar)
+router.delete('/like/:id/delete', deleteLike)
+router.delete('/comment/:id/delete', deleteComment)
 
 // export default router
 export default router

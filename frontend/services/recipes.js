@@ -1,7 +1,7 @@
 import api from '@/services/api';
 
 export const createRecipe = async data => {
-	const response = await api.post('/recipes', {
+	const response = await api.post('/recipe/create', {
 		title: data.title,
 		desc: data.desc,
 		content: data.content,
@@ -10,18 +10,41 @@ export const createRecipe = async data => {
 		ingredients: data.ingredients,
 		private: data.private
 	});
+
 	return response;
 };
 
 export const setLike = async data => {
-	const response = await api.post(`/likes/${data.postId}`, {
+	const response = await api.post(`/like/create`, {
+		postId: data.postId,
 		userId: data.userId
 	});
 	return response;
 };
 
+export const createComment = async data => {
+	const response = await api.post(`/comment/create`, {
+		postId: data.postId,
+		userId: data.userId,
+		content: data.content
+	});
+	return response;
+};
+
+export const updateComment = async data => {
+	const response = await api.put(`/comment/${data.commentId}/update`, {
+		content: data.content
+	});
+	return response;
+};
+
 export const deleteLike = async data => {
-	const response = await api.delete(`/likes/${data.likeId}`);
+	const response = await api.delete(`/like/${data.likeId}/delete`);
+	return response;
+};
+
+export const deleteComment = async data => {
+	const response = await api.delete(`/comment/${data.commentId}/delete`);
 	return response;
 };
 
@@ -31,7 +54,7 @@ export const getIngredients = async () => {
 };
 
 export const uploadPreview = async (data, token) => {
-	const response = await api.post(`/uploadPreview`, data, {
+	const response = await api.post(`/recipe/uploadPreview`, data, {
 		headers: {
 			Authorization: `Bearer ${token}`
 		}
@@ -45,7 +68,6 @@ export const getRecipes = async () => {
 };
 
 export const getRecipe = async id => {
-	const response = await api.get(`/recipes/id=${id}`);
-	console.log(response);
+	const response = await api.get(`/recipe/${id}`);
 	return response;
 };

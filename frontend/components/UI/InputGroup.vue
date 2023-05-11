@@ -45,7 +45,7 @@
 				:value="modelValue"
 			/>
 			<label
-				class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 bg-white px-1 leading-none opacity-0 duration-200"
+				class="pointer-events-none absolute left-4 top-1/2 -translate-y-[200%] bg-white px-1 leading-none duration-200"
 			>
 				{{ getLabel }}</label
 			>
@@ -119,20 +119,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-input:not(:placeholder-shown) ~ label {
-	animation: transform 1s;
-	animation-fill-mode: forwards;
-	opacity: 1;
-}
+// input:not(:placeholder-shown) ~ label {
+// 	animation: transform 1s;
+// 	animation-fill-mode: forwards;
+// 	opacity: 1;
+// }
 
-@keyframes transform {
-	from {
-		transform: translate(0, 0%);
-	}
-	to {
-		transform: translate(0, -200%);
-	}
-}
+// @keyframes transform {
+// 	from {
+// 		transform: translate(0, 0%);
+// 	}
+// 	to {
+// 		transform: translate(0, -200%);
+// 	}
+// }
 
 input:valid ~ .check {
 	@apply block;

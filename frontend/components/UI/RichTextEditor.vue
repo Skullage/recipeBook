@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h3 class="mb-2 pl-4">{{ label }}</h3>
+		<h3 class="mb-2 pl-4">{{ props.label }}</h3>
 		<QuillEditor
 			v-model:content="content"
 			class="!h-40 max-h-40 overflow-auto border"
@@ -11,7 +11,7 @@
 	</div>
 </template>
 
-<script>
+<script setup>
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
@@ -29,33 +29,57 @@ const toolbarOptions = [
 	['clean'],
 	['link', 'image']
 ];
-export default {
-	components: { QuillEditor },
-	props: {
-		label: String,
-		placeholder: String,
-		modelValue: String
-	},
-	data() {
-		return {
-			options: {
-				modules: {
-					toolbar: {
-						container: toolbarOptions
-					}
-				},
-				placeholder: this.placeholder,
-				theme: 'snow'
-			},
-			content: this.modelValue
-		};
-	},
-	methods: {
-		updateValue() {
-			this.$emit('input', JSON.stringify(this.content));
+
+const props = defineProps({
+	label: String,
+	placeholder: String,
+	modelValue: String
+});
+
+const emits = defineEmits(['input']);
+
+const options = {
+	modules: {
+		toolbar: {
+			container: toolbarOptions
 		}
-	}
+	},
+	placeholder: props.placeholder,
+	theme: 'snow'
 };
+
+const content = props.modelValue;
+
+const updateValue = () => {
+	emits('input', JSON.stringify(this.content));
+};
+// export default {
+// 	components: { QuillEditor },
+// 	props: {
+// 		label: String,
+// 		placeholder: String,
+// 		modelValue: String
+// 	},
+// 	data() {
+// 		return {
+// 			options: {
+// 				modules: {
+// 					toolbar: {
+// 						container: toolbarOptions
+// 					}
+// 				},
+// 				placeholder: this.placeholder,
+// 				theme: 'snow'
+// 			},
+// 			content: this.modelValue
+// 		};
+// 	},
+// 	methods: {
+// 		updateValue() {
+// 			this.$emit('input', JSON.stringify(this.content));
+// 		}
+// 	}
+// };
 </script>
 <style>
 .ql-hidden {
