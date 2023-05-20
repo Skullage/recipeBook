@@ -63,11 +63,11 @@ router.put('/user/:id/update', verifyUserToken, IsAdmin, updateUser)
 router.put('/comment/:id/update', updateComment)
 
 // Delete Product
-router.delete('/recipe/:id/delete', verifyUserToken, deleteRecipe)
+router.delete('/recipe/:id/delete', deleteRecipe)
 router.delete('/user/:id/delete', verifyUserToken, IsAdmin, deleteUser)
 router.delete('/user/avatar/:id/delete', deleteAvatar)
 router.delete('/like/:id/delete', deleteLike)
-router.delete('/comment/:id/delete', deleteComment)
+router.delete('/comment/:id/delete', verifyUserToken, IsAdmin, deleteComment)
 
 // export default router
 export default router

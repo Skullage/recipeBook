@@ -80,6 +80,12 @@ schema.virtual('likes', {
 	foreignField: '_user'
 })
 
+schema.virtual('myPosts', {
+	ref: 'Recipe',
+	localField: '_id',
+	foreignField: 'author'
+})
+
 schema.virtual('postsCount', {
 	ref: 'Recipe',
 	localField: '_id',

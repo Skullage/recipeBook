@@ -36,7 +36,7 @@ const props = defineProps({
 	modelValue: String
 });
 
-const emits = defineEmits(['input']);
+const emits = defineEmits(['update:modelValue']);
 
 const options = {
 	modules: {
@@ -48,38 +48,13 @@ const options = {
 	theme: 'snow'
 };
 
-const content = props.modelValue;
+const content = ref('');
 
 const updateValue = () => {
-	emits('input', JSON.stringify(this.content));
+	emits('update:modelValue', JSON.stringify(content.value));
 };
-// export default {
-// 	components: { QuillEditor },
-// 	props: {
-// 		label: String,
-// 		placeholder: String,
-// 		modelValue: String
-// 	},
-// 	data() {
-// 		return {
-// 			options: {
-// 				modules: {
-// 					toolbar: {
-// 						container: toolbarOptions
-// 					}
-// 				},
-// 				placeholder: this.placeholder,
-// 				theme: 'snow'
-// 			},
-// 			content: this.modelValue
-// 		};
-// 	},
-// 	methods: {
-// 		updateValue() {
-// 			this.$emit('input', JSON.stringify(this.content));
-// 		}
-// 	}
-// };
+
+content.value = props.modelValue;
 </script>
 <style>
 .ql-hidden {

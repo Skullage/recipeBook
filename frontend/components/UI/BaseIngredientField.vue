@@ -14,19 +14,19 @@
 				{{ item.title }}
 			</option>
 		</select>
-		<input-group
-			class="flex-1"
-			v-model="modelValue.amount"
-			type="text"
+		<number-input
+			v-model.number="modelValue.amount"
 			label="Количество"
 			required
+			class="flex-1"
+			@input=""
 		/>
 		<button @click.prevent="removeFromArray" class="btn">Удалить</button>
 	</div>
 </template>
 
 <script setup>
-import InputGroup from './InputGroup.vue';
+import NumberInput from './NumberInput.vue';
 
 const props = defineProps({
 	id: Number,

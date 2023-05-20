@@ -21,15 +21,26 @@ export const showUserById = async (req, res) => {
 	const id = req.params.id
 
 	await User.findById(id)
-		.populate({ path: 'likes', populate: { path: '_recipe', select: 'title' } })
+		.populate({
+			path: 'likes',
+			populate: { path: '_recipe', select: 'title' },
+		})
 		.populate('postsCount')
+		.populate({
+			path: 'myPosts',
+			populate: [
+				{ path: 'author', select: 'login avatar' },
+				{ path: 'likeCount' },
+				{ path: 'likes', populate: {path: '_user', select: 'login'} }
+			]
+		})
 		.exec()
 		.then(result => {
 			res.json(result)
 		})
 		.catch(error => {
 			console.log(error)
-			res.send(error)
+			res.status(401).send(error)
 		})
 }
 
@@ -179,7 +190,8 @@ export const login = async (req, res) => {
 			const user = {
 				id: result.id,
 				avatar: result.avatar,
-				login: result.login
+				login: result.login,
+				role: result.role
 			}
 			res
 				.status(200)

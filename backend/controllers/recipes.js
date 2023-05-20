@@ -23,7 +23,7 @@ export const showRecipes = async (req, res) => {
 
 export const deleteRecipe = async (req, res) => {
 	const id = req.params.id
-	await Recipe.findByIdAndRemove(id)
+	await Recipe.deleteOne({ _id: id })
 		.then(result => {
 			res.json({ message: 'deleted' })
 		})

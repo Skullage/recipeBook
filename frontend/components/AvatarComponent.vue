@@ -13,10 +13,10 @@
 					? `${API_URL}/avatars/placeholder.png`
 					: `${API_URL}/avatars/${props.src}`
 			"
-			class="avatar__img mx-auto h-full w-full rounded-full object-cover"
+			class="avatar__img mx-auto h-full w-full rounded-full object-contain"
 			:class="{ 'hover:opacity-80': props.canBeChange }"
 			alt="Аватар"
-			@click="$refs.avatarChange.click"
+			@click="changeAvatar"
 		/>
 		<div
 			class="avatar__upload pointer-events-none absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 text-2xl text-gray-200"
@@ -49,6 +49,7 @@ import API_URL from '@/config/config';
 import * as users from '@/services/users';
 
 const authStore = useAuthStore();
+const avatarChange = ref(null);
 
 const props = defineProps({
 	src: String,
@@ -57,6 +58,12 @@ const props = defineProps({
 });
 
 const emits = defineEmits(['uploadAvatar', 'deleteAvatar']);
+
+const changeAvatar = () => {
+	if (props.canBeChange) {
+		avatarChange.value.click();
+	}
+};
 
 const uploadAvatar = async event => {
 	const file = event.target.files[0];

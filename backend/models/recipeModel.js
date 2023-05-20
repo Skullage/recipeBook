@@ -1,5 +1,7 @@
 // import connection
 import db from '../config/db.js'
+import likeModel from './likeModel.js'
+import commentModel from './commentModel.js'
 
 const schema = new db.Schema({
 	title: {
@@ -87,6 +89,12 @@ schema.virtual('likes', {
 	ref: 'Like',
 	localField: '_id',
 	foreignField: '_recipe'
+})
+
+schema.pre('deleteOne', function () {
+	let recipeId = this.getQuery()['_id']
+	likeModel.deleteMany({ _recipe: recipeId }).then()
+	commentModel.deleteMany({ _recipe: recipeId }).then()
 })
 
 schema.post('save', function (next) {

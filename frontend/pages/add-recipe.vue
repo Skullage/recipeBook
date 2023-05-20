@@ -1,7 +1,7 @@
 <template>
 	<div class="container mx-auto flex justify-center px-4">
 		<form
-			class="flex h-full flex-col gap-10 border px-3 py-6"
+			class="flex h-full flex-col gap-10 rounded bg-primary px-10 py-6"
 			@submit.prevent="createRecipe"
 			enctype="multipart/form-data"
 		>
@@ -13,19 +13,14 @@
 					required
 					max="45"
 					placeholder="Название блюда"
+					class="w-full"
 				/>
 			</div>
 			<div>
-				<base-textarea
-					v-model="desc"
-					label="Описание"
-					@update="desc = $event"
-					required
-				/>
+				<base-textarea v-model="desc" label="Описание" required />
 			</div>
 			<div>
 				<rich-text-editor
-					@input="content = $event"
 					label="Рецепт"
 					placeholder="Рецепт"
 					v-model="content"
@@ -95,7 +90,7 @@ import BaseIngredientField from '@/components/UI/BaseIngredientField.vue';
 const title = ref('123');
 const desc = ref('123');
 const content = ref('123');
-const ingredients = reactive([{ title: '', amount: 0 }]);
+const ingredients = reactive([{ title: '', amount: +0 }]);
 const existingIngredients = ref([]);
 const tags = ref([]);
 const existingTags = ref([]);
@@ -120,6 +115,7 @@ const createRecipe = async () => {
 		.then(response => {
 			reset();
 			alert.printAlert('Ваш рецепт успешно добавлен на сайт', 'success');
+			navigateTo('/');
 		})
 		.catch(error => {
 			console.log(error);

@@ -22,9 +22,9 @@ const props = defineProps({
 	placeholder: String
 });
 
-const emits = defineEmits(['update']);
+const emits = defineEmits(['update:modelValue']);
 
 const updateValue = event => {
-	emits('update', event.target.value);
+	emits('update:modelValue', event.target.value);
 };
 </script>

@@ -3,7 +3,7 @@
 		class="container mx-auto flex min-h-full items-center justify-center px-4"
 	>
 		<form
-			class="flex w-1/3 flex-col gap-4 border px-3 py-6"
+			class="flex w-1/3 flex-col gap-4 bg-primary px-10 py-6"
 			@submit.prevent="register"
 		>
 			<h2 class="text-center text-2xl">Регистрация</h2>

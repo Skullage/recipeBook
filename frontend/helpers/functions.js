@@ -1,4 +1,4 @@
-export const formatDate = async date => {
+export const formatDate = date => {
 	const buffer = new Date(date);
 	let day = buffer.getDate() < 10 ? '0' + buffer.getDate() : buffer.getDate();
 	let month =

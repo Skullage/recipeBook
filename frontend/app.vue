@@ -1,7 +1,7 @@
 <template>
 	<div class="flex min-h-screen flex-col">
 		<NavBar class="mb-5" />
-		<NuxtPage class="flex-1" />
+		<NuxtPage class="mb-5 flex-1" />
 		<footer class="footer bg-gray-200 dark:bg-black dark:text-white">
 			<div class="container mx-auto px-4">
 				<p class="py-4 text-center">{{ $t('copy') }}</p>

@@ -19,6 +19,7 @@
 							<NuxtLink
 								:to="item.link"
 								class="menu__link relative cursor-pointer p-2 font-bold uppercase tracking-widest"
+								v-if="item.show"
 								>{{ item.title }}</NuxtLink
 							>
 						</li>
@@ -163,7 +164,11 @@ export default {
 				{ title: this.$t('about'), link: '#about' },
 				{ title: this.$t('skills'), link: '#skills' },
 				{ title: this.$t('projects'), link: '#projects' },
-				{ title: 'Добавить рецепт', link: '/add-recipe' }
+				{
+					title: 'Добавить рецепт',
+					link: '/add-recipe',
+					show: this.authStore.isLogged
+				}
 			],
 			isMobileMenuActive: false
 		};
@@ -180,6 +185,18 @@ export default {
 				{ title: this.$t('skills'), link: '#skills' },
 				{ title: this.$t('projects'), link: '#projects' }
 			];
+		},
+		'authStore.isLogged'(newVal, oldVal) {
+			this.menuLinks = [
+				{ title: this.$t('about'), link: '#about' },
+				{ title: this.$t('skills'), link: '#skills' },
+				{ title: this.$t('projects'), link: '#projects' },
+				{
+					title: 'Добавить рецепт',
+					link: '/add-recipe',
+					show: this.authStore.isLogged
+				}
+			]
 		}
 	}
 };

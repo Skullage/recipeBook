@@ -43,8 +43,17 @@ export const deleteLike = async data => {
 	return response;
 };
 
+export const deleteRecipe = async data => {
+	const response = await api.delete(`/recipe/${data.recipeId}/delete`);
+	return response;
+};
+
 export const deleteComment = async data => {
-	const response = await api.delete(`/comment/${data.commentId}/delete`);
+	const response = await api.delete(`/comment/${data.commentId}/delete`, {
+		headers: {
+			Authorization: `Bearer ${data.token}`
+		}
+	});
 	return response;
 };
 

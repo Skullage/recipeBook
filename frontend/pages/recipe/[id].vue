@@ -1,7 +1,9 @@
 <template>
 	<div class="container mx-auto flex min-h-full items-center justify-center">
-		<div class="w-full border py-6 px-4">
-			<h2 class="mb-6 text-center text-2xl font-bold">{{ title }}</h2>
+		<div class="w-full rounded bg-primary py-6 px-10">
+			<h2 class="mb-6 text-center text-2xl font-bold">
+				{{ title }}
+			</h2>
 			<div v-if="isRecipeExists">
 				<div class="mb-4 flex gap-4">
 					<div class="basis-1/4">
@@ -11,10 +13,10 @@
 							class="h-auto w-full rounded"
 						/>
 					</div>
-					<div>
+					<div class="flex-1">
 						<p>
 							Автор:
-							<NuxtLink :to="`/profile/${author._id}`" class="text-sky-700">{{
+							<NuxtLink :to="`/profile/${author._id}`" class="link">{{
 								author.login
 							}}</NuxtLink>
 						</p>
@@ -25,6 +27,9 @@
 						<p>
 							Количество порций:
 							{{ author.login }}
+						</p>
+						<p class="mb-3 border-b pb-3">
+							Дата публикации {{ formatDate(postDate) }}
 						</p>
 						<p>{{ desc }}</p>
 					</div>
@@ -39,40 +44,44 @@
 				</div>
 				<div class="mb-4">
 					<h3 class="text-xl font-bold">Рецепт</h3>
-					<p v-html="content" class=""></p>
+					<p v-html="getNormalContent"></p>
 				</div>
 
-				<div class="mb-4 flex gap-2">
-					<button>В избранное</button>
-
+				<div class="mb-4 flex items-center gap-2">
+					<button class="btn" v-if="authStore.isLogged">В избранное</button>
 					<button
-						class="flex gap-2 rounded-full bg-gray-300 py-1 px-4"
-						@click="toggleLike"
+						class="btn"
+						v-if="
+							author._id === authStore.user.id ||
+							authStore.user.role == 'Администратор'
+						"
+						@click="deleteRecipe"
 					>
-						<Icon
-							:icon="
-								userLikeId == null
-									? 'icon-park-outline:like'
-									: 'flat-color-icons:like'
-							"
-							width="24"
-							height="24"
-						/>
-						{{ likeCount }}
+						Удалить
 					</button>
+					<like-button
+						:postId="route.params.id"
+						:likeCount="likeCount"
+						:likes="postLikes"
+						@update="getRecipe"
+					/>
 				</div>
 				<div class="mb-4 hidden">
 					Понравилось:
 					<p v-for="(item, index) in postLikes" :key="index">
-						<NuxtLink :to="`/profile/${item._user._id}`" class="text-sky-700">{{
+						<NuxtLink :to="`/profile/${item._user._id}`" class="link">{{
 							item._user.login
 						}}</NuxtLink>
 					</p>
 				</div>
-				<div class="mb-6 flex items-center gap-4">
+				<div class="mb-6 flex items-center gap-4" v-if="authStore.isLogged">
 					<div class="flex-0 h-16 basis-16 rounded-full">
 						<img
-							:src="`${API_URL}/avatars/${authStore.user.avatar}`"
+							:src="
+								authStore.user.avatar !== ''
+									? `${API_URL}/avatars/${authStore.user.avatar}`
+									: `${API_URL}/avatars/placeholder.png`
+							"
 							class="h-full min-w-full rounded-full object-cover"
 						/>
 					</div>
@@ -93,6 +102,7 @@
 						:user="item._user"
 						:content="item.content"
 						@update="getRecipe"
+						class="mb-4"
 					/>
 				</div>
 			</div>
@@ -107,24 +117,26 @@
 import * as recipes from '@/services/recipes';
 import API_URL from '@/config/config';
 import { useAuthStore } from '@/store';
-import { Icon } from '@iconify/vue';
 import Comment from '@/components/Comment.vue';
+import { formatDate } from '~~/helpers/functions';
+import LikeButton from '~~/components/UI/Buttons/LikeButton.vue';
 
 const route = useRoute();
 
 const authStore = useAuthStore();
 
+const id = ref('');
 const title = ref('');
 const previewImg = ref('');
 const author = ref('');
 const content = ref('');
 const desc = ref('');
 const likeCount = ref(0);
-let postLikes = reactive([]);
-const userLikeId = ref(null);
-let ingredients = reactive([]);
+const postLikes = ref([]);
+const ingredients = ref([]);
 const commentText = ref('');
-let postComments = reactive('');
+const postComments = ref([]);
+const postDate = ref('');
 
 const isRecipeExists = ref(false);
 
@@ -132,35 +144,37 @@ const getRecipe = async () => {
 	await recipes
 		.getRecipe(route.params.id)
 		.then(response => {
+			id.value = response.data._id;
 			title.value = response.data.title;
 			previewImg.value = response.data.previewImg;
 			author.value = response.data.author;
 			desc.value = response.data.desc;
 			content.value = JSON.parse(response.data.content);
-			ingredients = JSON.parse(response.data.ingredients);
+			ingredients.value = JSON.parse(response.data.ingredients);
 			likeCount.value = response.data.likeCount;
+			postLikes.value = response.data.likes;
+			postComments.value = response.data.comments;
+			postDate.value = response.data.created_at;
+
 			isRecipeExists.value = true;
-			postLikes = response.data.likes;
-			postComments = response.data.comments;
 		})
 		.catch(error => {
 			console.log(error);
 		});
 };
 
-const toggleLike = async () => {
-	if (userLikeId.value == null) {
-		await recipes.setLike({
-			postId: route.params.id,
-			userId: authStore.user.id
+const deleteRecipe = async () => {
+	await recipes
+		.deleteRecipe({
+			recipeId: route.params.id,
+			token: localStorage.getItem('jwt')
+		})
+		.then(response => {
+			navigateTo('/');
+		})
+		.catch(error => {
+			console.log(error);
 		});
-	} else {
-		await recipes.deleteLike({
-			likeId: userLikeId.value
-		});
-	}
-	await getRecipe();
-	checkLike();
 };
 
 const reset = () => {
@@ -177,15 +191,9 @@ const createComment = async () => {
 	getRecipe();
 };
 
-const checkLike = () => {
-	userLikeId.value = null;
-	postLikes.forEach(el => {
-		if (el._user._id == authStore.user.id) {
-			userLikeId.value = el._id;
-		}
-	});
-};
+const getNormalContent = computed(() =>
+	content.value.slice(1, content.value.length - 1)
+);
 
 await getRecipe();
-checkLike();
 </script>

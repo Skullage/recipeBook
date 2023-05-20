@@ -1,21 +1,11 @@
 <template>
-	<div class="relative w-full">
+	<div class="relative">
 		<Icon
-			:icon="
-				showValidation
-					? validation
-						? 'material-symbols:check'
-						: 'material-symbols:close'
-					: icon
-			"
+			:icon="icon"
 			width="24"
 			height="24"
 			class="pointer-events-none absolute right-0 top-0 mt-2 mr-1"
-			:class="[
-				{ 'text-red-500': showValidation && !validation },
-				{ 'text-green-600': showValidation && validation }
-			]"
-			v-if="icon != null || showValidation"
+			v-if="icon != null"
 		/>
 		<Icon
 			:icon="showPass ? 'mdi:eye-off' : 'mdi:eye'"
@@ -28,7 +18,7 @@
 		<div>
 			<input
 				:type="isPasswordInput ? getInputType : type"
-				class="w-full border px-3 py-2 outline-none"
+				class="w-full rounded border px-3 py-2 outline-none"
 				:class="[
 					{ border: modelValue.length > 0 },
 					{ 'border-red-500': errorText != '' }
@@ -65,9 +55,7 @@ export default {
 	},
 	data() {
 		return {
-			showPass: false,
-			showValidation: this.validation != null,
-			isPasswordInput: this.type == 'password'
+			showPass: false
 		};
 	},
 	props: {
@@ -79,15 +67,11 @@ export default {
 		icon: String,
 		label: String,
 		required: Boolean,
-		validation: {
-			type: Array,
-			default: null
-		},
 		iconColor: String,
 		min: String,
 		max: String,
 		pattern: String,
-		modelValue: String,
+		modelValue: [Number, String],
 		placeholder: String,
 		errorText: { type: String, default: '' }
 	},
@@ -113,31 +97,10 @@ export default {
 			} else {
 				return this.label;
 			}
+		},
+		isPasswordInput() {
+			return this.type == 'password';
 		}
 	}
 };
 </script>
-
-<style lang="scss" scoped>
-// input:not(:placeholder-shown) ~ label {
-// 	animation: transform 1s;
-// 	animation-fill-mode: forwards;
-// 	opacity: 1;
-// }
-
-// @keyframes transform {
-// 	from {
-// 		transform: translate(0, 0%);
-// 	}
-// 	to {
-// 		transform: translate(0, -200%);
-// 	}
-// }
-
-input:valid ~ .check {
-	@apply block;
-}
-input:invalid ~ .xmark {
-	@apply block;
-}
-</style>
