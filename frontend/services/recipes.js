@@ -49,11 +49,7 @@ export const deleteRecipe = async data => {
 };
 
 export const deleteComment = async data => {
-	const response = await api.delete(`/comment/${data.commentId}/delete`, {
-		headers: {
-			Authorization: `Bearer ${data.token}`
-		}
-	});
+	const response = await api.delete(`/comment/${data.commentId}/delete`);
 	return response;
 };
 

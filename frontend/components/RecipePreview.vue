@@ -9,8 +9,8 @@
 		</div>
 
 		<div class="mb-4 flex gap-4 indent-4">
-			<div class="basis-36">
-				<img :src="getPreview" alt="Preview" class="block h-auto w-full" />
+			<div class="flex h-36 basis-36">
+				<img :src="getPreview" alt="Preview" class="block h-auto max-w-full" />
 			</div>
 			<p class="flex-1 text-justify">{{ props.desc }}</p>
 		</div>
@@ -40,7 +40,12 @@
 				</p>
 			</div>
 			<div>
-				<like-button :postId="id" :likes="likes" :likeCount="likeCount" />
+				<like-button
+					:postId="id"
+					:likes="likes"
+					:likeCount="likeCount"
+					@update="emits('update')"
+				/>
 			</div>
 		</div>
 	</div>
@@ -50,6 +55,8 @@
 import API_URL from '@/config/config';
 import { formatDate } from '@/helpers/functions';
 import LikeButton from './UI/Buttons/LikeButton.vue';
+
+const emits = defineEmits(['update']);
 
 const props = defineProps({
 	id: { type: String, required: true },

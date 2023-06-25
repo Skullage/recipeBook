@@ -31,9 +31,10 @@ const isLikeSetted = computed(
 
 const toggleLike = async () => {
 	if (!authStore.isLogged) {
+		console.log(1);
+
 		return;
 	}
-	console.log(isLikeSetted.value);
 	if (isLikeSetted.value) {
 		await recipes.setLike({
 			postId: props.postId,

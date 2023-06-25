@@ -23,7 +23,7 @@ export const showUserById = async (req, res) => {
 	await User.findById(id)
 		.populate({
 			path: 'likes',
-			populate: { path: '_recipe', select: 'title' },
+			populate: { path: '_recipe', select: 'title' }
 		})
 		.populate('postsCount')
 		.populate({
@@ -31,7 +31,7 @@ export const showUserById = async (req, res) => {
 			populate: [
 				{ path: 'author', select: 'login avatar' },
 				{ path: 'likeCount' },
-				{ path: 'likes', populate: {path: '_user', select: 'login'} }
+				{ path: 'likes', populate: { path: '_user', select: 'login' } }
 			]
 		})
 		.exec()
@@ -186,7 +186,7 @@ export const login = async (req, res) => {
 				id: result.id,
 				isAdmin: result.role == 'Администратор'
 			}
-			const token = jwt.sign(payload, config.TOKEN_SECRET)
+			const token = jwt.sign(payload, config.TOKEN_SECRET, { expiresIn: '7d' })
 			const user = {
 				id: result.id,
 				avatar: result.avatar,

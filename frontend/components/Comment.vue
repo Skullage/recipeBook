@@ -51,9 +51,10 @@
 import API_URL from '@/config/config';
 import * as recipes from '@/services/recipes';
 import { Icon } from '@iconify/vue';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useModalStore } from '@/store';
 
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 const editable = ref(false);
 const content = ref(props.content);
 const bufferedContent = ref('');
@@ -87,16 +88,24 @@ const editComment = async () => {
 };
 
 const removeComment = async () => {
-	await recipes
-		.deleteComment({
-			commentId: props.id,
-			token: localStorage.getItem('jwt')
-		})
-		.then()
-		.catch(error => {
-			console.log(error);
-		});
-	emits('update');
+	const ok = await modalStore.showModal({
+		title: 'Подтвеждение удаления',
+		message: 'Вы действительно хотите удалить комментарий?',
+		confirmBtn: 'Да',
+		cancelButton: 'Нет'
+	});
+	if (ok) {
+		await recipes
+			.deleteComment({
+				commentId: props.id,
+				token: authStore.token
+			})
+			.then()
+			.catch(error => {
+				console.log(error);
+			});
+		emits('update');
+	}
 };
 
 const getEditBtnText = computed(() =>

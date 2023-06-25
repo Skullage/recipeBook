@@ -14,7 +14,7 @@
 					<slot name="title">Заголовок</slot>
 					<button
 						class="absolute right-0 top-0 mr-3 mt-3 h-6 w-6"
-						@click="closeModal"
+						@click="closeModalWindow"
 					>
 						<Icon
 							icon="material-symbols:close"
@@ -41,10 +41,16 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 const props = defineProps({
-	show: false
+	show: Boolean
 });
-const emit = defineEmits(['close']);
-const closeModal = () => {
-	emit('close');
+const emits = defineEmits(['close']);
+const open = () => {
+	show.value = true;
+};
+const close = () => {
+	show.value = false;
+};
+const closeModalWindow = () => {
+	emits('close');
 };
 </script>

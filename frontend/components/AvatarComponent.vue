@@ -44,11 +44,12 @@
 
 <script setup>
 import { Icon } from '@iconify/vue';
-import { useAuthStore } from '@/store/index';
+import { useAuthStore, useModalStore } from '@/store/index';
 import API_URL from '@/config/config';
 import * as users from '@/services/users';
 
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 const avatarChange = ref(null);
 
 const props = defineProps({
@@ -69,7 +70,7 @@ const uploadAvatar = async event => {
 	const file = event.target.files[0];
 	const data = new FormData();
 	data.append('file', file, authStore.user.id);
-	await users.uploadAvatar(data, localStorage.getItem('jwt')).then(response => {
+	await users.uploadAvatar(data, authStore.token).then(response => {
 		if (props.src != '') {
 			deleteAvatar(props.src);
 		}
@@ -78,10 +79,18 @@ const uploadAvatar = async event => {
 	});
 };
 const deleteAvatar = async src => {
-	await users.deleteAvatar(authStore.user.id, src).then(response => {
-		authStore.setAvatar('');
-		emits('deleteAvatar');
+	const ok = await modalStore.showModal({
+		title: 'Подтвеждение удаления',
+		message: 'Вы действительно хотите удалить комментарий?',
+		confirmBtn: 'Да',
+		cancelButton: 'Нет'
 	});
+	if (ok) {
+		await users.deleteAvatar(authStore.user.id, src).then(response => {
+			authStore.setAvatar('');
+			emits('deleteAvatar');
+		});
+	}
 };
 </script>
 

@@ -110,20 +110,25 @@
 				<h2>Рецепт не существует!</h2>
 			</div>
 		</div>
+		<confirm-modal ref="confirmModal" />
 	</div>
 </template>
 
 <script setup>
 import * as recipes from '@/services/recipes';
 import API_URL from '@/config/config';
-import { useAuthStore } from '@/store';
+import { useAuthStore, useModalStore } from '@/store';
 import Comment from '@/components/Comment.vue';
 import { formatDate } from '~~/helpers/functions';
 import LikeButton from '~~/components/UI/Buttons/LikeButton.vue';
+import ConfirmModal from '~~/components/UI/Modals/ConfirmModal.vue';
+
+const confirmModal = ref(null);
 
 const route = useRoute();
 
 const authStore = useAuthStore();
+const modalStore = useModalStore();
 
 const id = ref('');
 const title = ref('');
@@ -155,7 +160,6 @@ const getRecipe = async () => {
 			postLikes.value = response.data.likes;
 			postComments.value = response.data.comments;
 			postDate.value = response.data.created_at;
-
 			isRecipeExists.value = true;
 		})
 		.catch(error => {
@@ -164,17 +168,23 @@ const getRecipe = async () => {
 };
 
 const deleteRecipe = async () => {
-	await recipes
-		.deleteRecipe({
-			recipeId: route.params.id,
-			token: localStorage.getItem('jwt')
-		})
-		.then(response => {
-			navigateTo('/');
-		})
-		.catch(error => {
-			console.log(error);
-		});
+	const ok = await modalStore.showModal({
+		title: 'Подтвеждение удаления',
+		message: 'Вы действительно хотите удалить эту статью?',
+		confirmBtn: 'Да',
+		cancelButton: 'Нет'
+	});
+	if (ok) {
+		await recipes
+			.deleteRecipe({
+				recipeId: route.params.id,
+				token: authStore.token
+			})
+			.then(navigateTo('/'))
+			.catch(error => {
+				console.log(error);
+			});
+	}
 };
 
 const reset = () => {

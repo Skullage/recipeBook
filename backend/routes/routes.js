@@ -67,7 +67,7 @@ router.delete('/recipe/:id/delete', deleteRecipe)
 router.delete('/user/:id/delete', verifyUserToken, IsAdmin, deleteUser)
 router.delete('/user/avatar/:id/delete', deleteAvatar)
 router.delete('/like/:id/delete', deleteLike)
-router.delete('/comment/:id/delete', verifyUserToken, IsAdmin, deleteComment)
+router.delete('/comment/:id/delete', verifyUserToken, deleteComment)
 
 // export default router
 export default router

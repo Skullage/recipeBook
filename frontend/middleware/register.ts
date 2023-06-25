@@ -1,5 +1,7 @@
+import { useAuthStore } from '@/store/index';
+
 export default defineNuxtRouteMiddleware((to, from) => {
-	if (localStorage.getItem('jwt') !== null) {
+	if (authStore.token !== null) {
 		return navigateTo('/');
 	}
 });

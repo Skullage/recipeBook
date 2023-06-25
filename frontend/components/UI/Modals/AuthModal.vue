@@ -1,5 +1,5 @@
 <template>
-	<modal @close="closeModal" :show="authStore.showModal">
+	<modal @close="authStore.closeModal" :show="authStore.showModal">
 		<template v-slot:title>
 			<h3 class="modal-title">Авторизация</h3>
 		</template>
@@ -12,9 +12,16 @@
 					label="Логин"
 					v-model="username"
 					icon="material-symbols:person"
+					class="w-full"
 					required
 				/>
-				<input-group label="Пароль" type="password" v-model="pass" required />
+				<input-group
+					label="Пароль"
+					class="w-full"
+					type="password"
+					v-model="pass"
+					required
+				/>
 				<div class="flex w-full justify-around">
 					<div class="form-group flex items-center gap-1">
 						<input
@@ -22,9 +29,9 @@
 							name="remember"
 							id="remember"
 							class="h-4 w-4 cursor-pointer"
-							v-model="remember"
+							v-model="isAnoutherComputer"
 						/>
-						<label for="remember" class="cursor-pointer">Запомнить меня</label>
+						<label for="remember" class="cursor-pointer">Чужой компьютер</label>
 					</div>
 					<NuxtLink href="#">Забыли пароль?</NuxtLink>
 				</div>
@@ -34,7 +41,10 @@
 		<template v-slot:footer>
 			<p class="pb-3">
 				Нет аккаунта?
-				<NuxtLink href="/register" class="font-bold" @click="closeModal"
+				<NuxtLink
+					href="/register"
+					class="font-bold"
+					@click="authStore.closeModal"
 					>Зарегистрироваться</NuxtLink
 				>
 			</p>
@@ -43,30 +53,20 @@
 </template>
 
 <script setup>
-import Modal from '@/components/UI/Modal.vue';
+import Modal from '@/components/UI/Modals/BaseModal.vue';
 import InputGroup from '@/components/UI/InputGroup.vue';
-import { useAuthStore, useAlertStore } from '@/store/index';
-import * as users from '@/services/users';
+import { useAuthStore } from '@/store/index';
 
 const authStore = useAuthStore();
-const alert = useAlertStore();
 const username = ref('');
 const pass = ref('');
-const remember = ref(false);
+const isAnoutherComputer = ref(false);
 
-const closeModal = () => {
-	authStore.toggleShow();
-};
 const auth = async () => {
-	const user = {
-		login: username.value,
-		password: pass.value
-	};
-	await users.auth(user).then(response => {
-		authStore.auth(response.data.user, response.data.token);
-		alert.printAlert('Вы успешно авторизовались', 'success');
-		closeModal();
-		navigateTo('/');
-	});
+	await authStore
+		.auth(username.value, pass.value, isAnoutherComputer.value)
+		.then(() => {
+			navigateTo('/');
+		});
 };
 </script>

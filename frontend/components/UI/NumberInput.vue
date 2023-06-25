@@ -1,8 +1,8 @@
 <template>
 	<input-group
-		v-model="tel"
-		@input="setTel"
-		@delete="setTel"
+		v-model="data"
+		@input="setData"
+		@delete="setData"
 		placeholder="only numbers"
 		:label="props.label"
 		required
@@ -19,17 +19,17 @@ const props = defineProps({
 
 const emits = defineEmits(['update:modelValue']);
 
-const tel = ref(props.modelValue);
+const data = ref(props.modelValue);
 
-const setTel = v => {
-	const val = v.target.value.replace(/[^0-9]/g, '');
-	if (val[0] == 0) {
-		tel.value = val.slice(1);
-	} else if (val == '') {
-		tel.value = 0;
+const setData = event => {
+	const value = event.target.value.replace(/[^0-9]/g, '');
+	if (value[0] == 0) {
+		data.value = val.slice(1);
+	} else if (value == '') {
+		data.value = 0;
 	} else {
-		tel.value = val;
+		data.value = value;
 	}
-	emits('update:modelValue', tel.value);
+	emits('update:modelValue', data.value);
 };
 </script>

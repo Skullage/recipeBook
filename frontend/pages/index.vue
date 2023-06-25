@@ -16,6 +16,7 @@
 					:likes="item.likes"
 					:postDate="item.created_at"
 					class="basis-1/3"
+					@update="getPosts"
 				/>
 			</section>
 		</div>

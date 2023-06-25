@@ -27,7 +27,7 @@
 						</div>
 					</div>
 					<div class="text-center">
-						<button class="btn">
+						<button class="btn" @click="$emit('toggle')">
 							{{ props.isMyProfile ? 'Мои посты' : 'Посты пользователя' }}
 						</button>
 					</div>
@@ -45,6 +45,8 @@ const props = defineProps({
 	response: { Object },
 	isMyProfile: { Boolean }
 });
+
+const emits = defineEmits(['toggle']);
 
 const profileInfo = ref();
 

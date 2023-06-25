@@ -1,4 +1,6 @@
 import API_URL from '@/config/config';
+import * as users from '@/services/users';
+import api from '@/services/api';
 
 export const useThemeStore = defineStore('theme', {
 	state: () => ({
@@ -69,34 +71,94 @@ export const useAlertStore = defineStore('alert', {
 
 export const useAuthStore = defineStore('auth', {
 	state: () => ({
-		user: JSON.parse(localStorage.getItem('user')) || {},
-		isLogged: localStorage.getItem('jwt') != undefined,
-		showModal: false
+		user:
+			JSON.parse(localStorage.getItem('user')) ||
+			JSON.parse(sessionStorage.getItem('user')) ||
+			{},
+		showModal: false,
+		token: localStorage.getItem('jwt') || sessionStorage.getItem('jwt') || '',
+		status: ''
 	}),
 	getters: {
 		getAvatar() {
 			return `${API_URL}/avatars/${this.user.avatar}`;
+		},
+		isLogged() {
+			return !!this.token;
+		},
+		authStatus() {
+			return this.status;
 		}
 	},
 	actions: {
-		auth(user, jwt) {
-			this.isLogged = true;
-			this.user = user;
-			localStorage.setItem('jwt', jwt);
-			localStorage.setItem('user', JSON.stringify(this.user));
+		async auth(login, password, isAnotherComputer) {
+			await users
+				.auth({ login, password })
+				.then(response => {
+					this.token = response.data.token;
+					this.user = response.data.user;
+					if (isAnotherComputer) {
+						sessionStorage.setItem('jwt', this.token);
+						sessionStorage.setItem('user', JSON.stringify(this.user));
+					} else {
+						localStorage.setItem('jwt', this.token);
+						localStorage.setItem('user', JSON.stringify(this.user));
+					}
+					this.status = 'success';
+					api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+					this.closeModal();
+				})
+				.catch(error => {
+					this.status = error;
+					console.log(error);
+				});
 		},
 		setAvatar(file) {
 			this.user.avatar = file;
 			localStorage.setItem('user', JSON.stringify(this.user));
 		},
 		logout() {
-			this.isLogged = false;
 			this.user = {};
+			this.token = '';
 			localStorage.removeItem('jwt');
 			localStorage.removeItem('user');
+			delete api.defaults.headers.common['Authorization'];
 		},
-		toggleShow() {
-			this.showModal = !this.showModal;
+		openModal() {
+			this.showModal = true;
+		},
+		closeModal() {
+			this.showModal = false;
+		}
+	}
+});
+
+export const useModalStore = defineStore('modal', {
+	state: () => ({
+		confirmModal: {
+			title: '',
+			message: '',
+			confirmBtn: 'Да',
+			cancelBtn: 'Нет',
+			isShow: false,
+			resolvePromise: undefined,
+			rejectPromise: undefined
+		}
+	}),
+	actions: {
+		async showModal(options = {}) {
+			this.confirmModal.title = options.title;
+			this.confirmModal.message = options.message;
+			this.confirmModal.confirmBtn = options.confirmBtn;
+			this.confirmModal.cancelButton = options.cancelBtn;
+			this.confirmModal.isShow = true;
+			return new Promise((resolve, reject) => {
+				this.confirmModal.resolvePromise = resolve;
+				this.confirmModal.rejectPromise = reject;
+			});
+		},
+		closeModal() {
+			this.confirmModal.isShow = false;
 		}
 	}
 });

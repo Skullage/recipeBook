@@ -140,11 +140,9 @@ const uploadPreview = async event => {
 	const data = new FormData();
 	const fileName = getRandomName();
 	data.append('file', file, fileName);
-	await recipes
-		.uploadPreview(data, localStorage.getItem('jwt'))
-		.then(response => {
-			previewImg.value = `${fileName}.jpg`;
-		});
+	await recipes.uploadPreview(data, authStore.token).then(response => {
+		previewImg.value = `${fileName}.jpg`;
+	});
 };
 
 const getRandomName = () =>

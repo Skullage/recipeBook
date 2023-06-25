@@ -2,7 +2,7 @@
 	<header
 		class="header sticky top-0 z-10 mb-10 bg-white py-2 shadow-[0_5px_5px_-5px_rgba(34,60,80,0.6)] dark:bg-black"
 	>
-		<div class="container mx-auto px-4">
+		<div class="container mx-auto min-h-full px-4">
 			<div class="flex items-center justify-between gap-8">
 				<div class="logo flex-initial">
 					<a href="/" class="logo__link"
@@ -50,9 +50,7 @@
 									>Профиль</NuxtLink
 								>
 							</li>
-							<li class="profile-menu__link" @click="authStore.logout">
-								Выйти
-							</li>
+							<li class="profile-menu__link" @click="logout">Выйти</li>
 						</ul>
 					</div>
 
@@ -135,27 +133,31 @@
 					</ul>
 				</nav>
 			</div>
-			<auth-form />
+			<auth-modal />
+			<confirm-modal />
 		</div>
 	</header>
 </template>
 
 <script>
-import { useThemeStore, useAuthStore } from '@/store/index';
+import { useThemeStore, useAuthStore, useModalStore } from '@/store/index';
 import { Icon } from '@iconify/vue';
-import AuthForm from '@/components/AuthForm.vue';
+import AuthModal from '@/components/UI/Modals/AuthModal.vue';
+import ConfirmModal from '@/components/UI/Modals/ConfirmModal.vue';
 import AvatarComponent from '@/components/AvatarComponent.vue';
 
 export default {
 	components: {
 		Icon,
-		AuthForm,
-		AvatarComponent
+		AuthModal,
+		AvatarComponent,
+		ConfirmModal
 	},
 	setup() {
 		return {
 			store: useThemeStore(),
-			authStore: useAuthStore()
+			authStore: useAuthStore(),
+			modalStore: useModalStore()
 		};
 	},
 	data() {
@@ -175,7 +177,18 @@ export default {
 	},
 	methods: {
 		showModal() {
-			this.authStore.toggleShow();
+			this.authStore.openModal();
+		},
+		async logout() {
+			const ok = await this.modalStore.showModal({
+				title: 'Подтвеждение выхода',
+				message: 'Вы действительно хотите выйти?',
+				confirmBtn: 'Да',
+				cancelButton: 'Нет'
+			});
+			if (ok) {
+				this.authStore.logout();
+			}
 		}
 	},
 	watch: {
@@ -196,7 +209,7 @@ export default {
 					link: '/add-recipe',
 					show: this.authStore.isLogged
 				}
-			]
+			];
 		}
 	}
 };
